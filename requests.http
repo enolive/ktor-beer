@@ -1,5 +1,28 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
+### get all beers
+GET http://localhost:8080/beers
 
-###
+### get specific beer
+GET http://localhost:8080/beers/6835dfd3f1c7577abec865eb
+
+### create a beer
+POST http://localhost:8080/beers
+Content-Type: application/json
+
+{
+  "brand": "Dorada",
+  "name": "Especial",
+  "strength": 5.7
+}
+
+### delete a beer
+DELETE http://localhost:8080/beers/6835f059bb20483e43657631
+
+### update a beer
+PUT http://localhost:8080/beers/68373e676223173aac8629d6
+Content-Type: application/json
+
+{
+  "brand": "Neos",
+  "name": "APA",
+  "strength": 5.5
+}

@@ -1,23 +1,123 @@
-openapi: "3.0.3"
+openapi: "3.1.0"
 info:
-  title: "Application API"
-  description: "Application API"
+  title: "ktor_beer API"
+  description: "ktor_beer API"
   version: "1.0.0"
 servers:
-  - url: "http://0.0.0.0:8080"
+  - url: "https://ktor_beer"
 paths:
-  /:
+  /beers:
     get:
-      description: "Hello World!"
+      description: ""
       responses:
         "200":
           description: "OK"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
+                $ref: "#/components/schemas/Beers"
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartialBeer"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Beer"
+  /beers/{id}:
+    delete:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema: { }
+    put:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartialBeer"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Beer"
 components:
-  schemas: { }
+  schemas:
+    Beers:
+      type: "array"
+      items:
+        $ref: "#/components/schemas/Beer"
+    PartialBeer:
+      type: "object"
+      properties:
+        brand:
+          type: "string"
+        name:
+          type: "string"
+        strength:
+          type: "number"
+          format: "double"
+      required:
+        - "brand"
+        - "name"
+        - "strength"
+    ObjectId:
+      type: "string"
+    Beer:
+      type: "object"
+      properties:
+        id:
+          nullable: true
+          $ref: "#/components/schemas/ObjectId"
+        brand:
+          type: "string"
+        name:
+          type: "string"
+        strength:
+          type: "number"
+          format: "double"
+      required:
+        - "brand"
+        - "name"
+        - "strength"
