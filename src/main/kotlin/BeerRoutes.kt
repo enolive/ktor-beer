@@ -31,10 +31,12 @@ fun Application.configureBeerRoutes() {
     }
 
     post("/beers") {
-      either<InvalidBody, Beer> {
+      either {
         val partialBeer = call.receiveBeer().bind()
         service.create(partialBeer)
-      }.respond(HttpStatusCode.Created)
+      }.respond(HttpStatusCode.Created) {
+        append(HttpHeaders.Location, "/beers/${it.id}")
+      }
     }
 
     put("/beers/{id}") {
@@ -58,9 +60,12 @@ private suspend fun RoutingCall.receiveBeer() =
 
 private val logger = KtorSimpleLogger("BeersRoutes")
 
-// TODO: migrate to context parameters with kotlin 2.2
-context(RoutingContext)
-private suspend inline fun <reified T : Any> Either<RequestError, T>.respond(statusCode: HttpStatusCode = HttpStatusCode.OK) {
+context(ctx: RoutingContext)
+private suspend inline fun <reified T : Any> Either<RequestError, T>.respond(
+  statusCode: HttpStatusCode = HttpStatusCode.OK,
+  builder: ResponseHeaders.(T) -> Unit = { },
+) {
+  val call = ctx.call
   this.fold(
     { error ->
       logger.warn(error.toString())
@@ -71,6 +76,9 @@ private suspend inline fun <reified T : Any> Either<RequestError, T>.respond(sta
       call.response.status(status)
       call.respond(error)
     },
-    { value -> call.respond<T>(statusCode, value) }
+    { value ->
+      builder(call.response.headers, value)
+      call.respond<T>(statusCode, value)
+    }
   )
 }
