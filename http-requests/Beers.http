@@ -1,0 +1,33 @@
+### get all existing beers
+GET http://localhost:8080/beers
+
+<> 2025-06-26T201749.200.json
+
+### create a beer
+POST http://localhost:8080/beers
+Content-Type: application/json
+
+{
+  "brand": "Dorada",
+  "name": "Especial",
+  "strength": 5.7
+}
+
+<> 2025-06-26T201752.201.json
+<> 2025-05-27T175252.200.json
+
+### get single beer
+GET http://localhost:8080/beers/685d8ed0b09f706e7cbb1a38
+
+### update existing beer
+PUT http://localhost:8080/beers/685d8ed0b09f706e7cbb1a38
+Content-Type: application/json
+
+{
+  "brand": "Dorada",
+  "name": "Especial",
+  "strength": 5.7
+}
+
+### delete existing beer
+DELETE http://localhost:8080/beers/685d8ed0b09f706e7cbb1a38
