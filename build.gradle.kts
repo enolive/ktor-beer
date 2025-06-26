@@ -50,7 +50,12 @@ dependencies {
   testImplementation("io.kotest:kotest-assertions-json:$kotest_version")
   testImplementation("io.kotest:kotest-property:$kotest_version")
   testImplementation("io.kotest.extensions:kotest-assertions-ktor:2.0.0")
+  testImplementation("io.kotest.extensions:kotest-assertions-arrow:2.0.0")
+  implementation("io.kotest.extensions:kotest-extensions-testcontainers:2.0.2")
   testImplementation("io.mockk:mockk:1.14.2")
+  testImplementation("org.testcontainers:testcontainers:1.21.2")
+  testImplementation("org.testcontainers:mongodb:1.19.3")
+  testImplementation("org.testcontainers:junit-jupiter:1.19.3")
 }
 
 kotlin {

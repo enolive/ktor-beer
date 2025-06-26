@@ -2,8 +2,8 @@ package de.welcz
 
 import arrow.core.left
 import arrow.core.right
-import de.welcz.TestData.randomBeer
-import de.welcz.TestData.randomBeers
+import de.welcz.testutil.TestData.randomBeer
+import de.welcz.testutil.TestData.randomBeers
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.spec.style.DescribeSpec

@@ -1,5 +1,7 @@
-package de.welcz
+package de.welcz.testutil
 
+import de.welcz.Beer
+import de.welcz.PartialBeer
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import org.bson.types.ObjectId
@@ -19,7 +21,17 @@ fun Arb.Companion.beer(): Arb<Beer> = arbitrary {
   )
 }
 
+fun Arb.Companion.partialBeer(): Arb<PartialBeer> = arbitrary {
+  PartialBeer(
+    brand = Arb.brand().bind(),
+    name = Arb.name().bind(),
+    strength = Arb.double(0.1, 15.0).bind()
+  )
+}
+
 object TestData {
+  fun randomPartialBeer() = Arb.partialBeer().single()
   fun randomBeer() = Arb.beer().single()
   fun randomBeers(count: Int) = Arb.beer().take(count).toList()
+  fun randomObjectId() = Arb.objectId().single()
 }

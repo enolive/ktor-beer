@@ -25,7 +25,7 @@ interface BeerService {
 }
 
 class MongoBeerService(mongoDatabase: MongoDatabase) : BeerService {
-  private var collection: MongoCollection<Beer> = mongoDatabase.getCollection("beers")
+  internal var collection: MongoCollection<Beer> = mongoDatabase.getCollection("beers")
 
   override suspend fun create(beer: PartialBeer): Beer {
     val toCreate = beer.withId(null)
