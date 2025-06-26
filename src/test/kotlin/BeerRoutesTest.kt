@@ -24,6 +24,10 @@ import org.koin.ktor.plugin.Koin
 
 class BeerRoutesTest : DescribeSpec({
   describe("API for /beers") {
+    beforeAny {
+      clearAllMocks()
+    }
+
     describe("has GET /") {
       it("returns list of existing beers") {
         withBeerRoutes {
