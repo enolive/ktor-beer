@@ -2,6 +2,8 @@ package de.welcz
 
 import arrow.core.left
 import arrow.core.right
+import de.welcz.TestData.randomBeer
+import de.welcz.TestData.randomBeers
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.spec.style.DescribeSpec
@@ -25,7 +27,7 @@ class BeerRoutesTest : DescribeSpec({
     describe("has GET /") {
       it("returns list of existing beers") {
         withBeerRoutes {
-          val existingBeers = listOf(Beer(ObjectId.get(), "Astra", "Urhell", 5.0))
+          val existingBeers = randomBeers(5)
           every { serviceMock.findAll() } returns existingBeers.asFlow()
 
           val response = client.get("/beers")
@@ -100,7 +102,7 @@ class BeerRoutesTest : DescribeSpec({
               }
             """.trimIndent()
           val expectedToCreate = PartialBeer("Astra", "Urhell", 5.0)
-          val createdBeer = Beer(ObjectId.get(), "Astra", "Urhell", 5.0)
+          val createdBeer = randomBeer()
           val capturedBeer = slot<PartialBeer>()
           coEvery { serviceMock.create(capture(capturedBeer)) } returns createdBeer
 
@@ -128,7 +130,7 @@ class BeerRoutesTest : DescribeSpec({
               }
             """.trimIndent()
           val expectedToUpdate = PartialBeer("Astra", "Urhell", 5.0)
-          val updatedBeer = Beer(ObjectId.get(), "Astra", "Urhell", 5.0)
+          val updatedBeer = randomBeer()
           val captureUpdate = slot<PartialBeer>()
           coEvery { serviceMock.update(theId, capture(captureUpdate)) } returns updatedBeer.right()
 
