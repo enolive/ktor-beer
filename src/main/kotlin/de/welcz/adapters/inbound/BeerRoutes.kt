@@ -1,16 +1,11 @@
 package de.welcz.adapters.inbound
 
-import arrow.core.Either
 import arrow.core.raise.either
-import de.welcz.PartialBeer
 import de.welcz.domain.BeerService
-import de.welcz.domain.InvalidBody
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.util.logging.*
 import org.koin.ktor.ext.inject
 
 fun Application.configureBeerRoutes() {
@@ -23,21 +18,21 @@ fun Application.configureBeerRoutes() {
 
     get("/beers/{id}") {
       val id = call.receiveId()
-      service.findById(id).respond(HttpStatusCode.OK)
+      service.findById(id).respondEither(HttpStatusCode.OK)
     }
 
     delete("/beers/{id}") {
       val id = call.receiveId()
       service
         .deleteById(id)
-        .respond(HttpStatusCode.NoContent)
+        .respondEither(HttpStatusCode.NoContent)
     }
 
     post("/beers") {
       either {
         val partialBeer = call.receiveBeer().bind()
         service.create(partialBeer)
-      }.respond(HttpStatusCode.Created) {
+      }.respondEither(HttpStatusCode.Created) {
         append(HttpHeaders.Location, "/beers/${it.id}")
       }
     }
@@ -48,18 +43,9 @@ fun Application.configureBeerRoutes() {
         val beer = call.receiveBeer().bind()
         service.update(id, beer).bind()
       }
-      result.respond()
+      result.respondEither()
     }
   }
 }
 
-private fun RoutingCall.receiveId(): String = parameters["id"]!!
-
-private suspend fun RoutingCall.receiveBeer() =
-  Either
-    .catchOrThrow<ContentTransformationException, PartialBeer> { receive<PartialBeer>() }
-    .onLeft { logger.error("creating a beer from the request body failed", it) }
-    .mapLeft { InvalidBody() }
-
-private val logger = KtorSimpleLogger("BeersRoutes")
 

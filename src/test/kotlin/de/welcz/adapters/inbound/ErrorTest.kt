@@ -1,7 +1,7 @@
 package de.welcz.adapters.inbound
 
 import arrow.core.left
-import de.welcz.domain.InvalidBody
+import arrow.core.raise.either
 import de.welcz.domain.MalformedId
 import de.welcz.domain.ResourceNotFound
 import io.kotest.assertions.json.FieldComparison
@@ -86,16 +86,18 @@ private fun ApplicationTestBuilder.setupApplication() {
     routing {
       get("malformed-id/{id}") {
         val id = call.parameters["id"]!!
-        MalformedId(id).left().respond()
+        MalformedId(id).left().respondEither()
       }
 
       get("resource-not-found/{id}") {
         val id = call.parameters["id"]!!
-        ResourceNotFound(id).left().respond()
+        ResourceNotFound(id).left().respondEither()
       }
 
       post("invalid-body") {
-        InvalidBody().left().respond()
+        either {
+          call.receiveBeer().bind()
+        }.respondEither()
       }
     }
   }
