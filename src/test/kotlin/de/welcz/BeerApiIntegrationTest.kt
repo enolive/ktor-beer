@@ -55,8 +55,7 @@ class BeerApiIntegrationTest : DescribeSpec({
 private fun ApplicationTestBuilder.setupTestApplication(mongoContainer: MongoDBContainer) {
   environment {
     config = MapApplicationConfig(
-      "db.mongo.host" to mongoContainer.host,
-      "db.mongo.port" to mongoContainer.firstMappedPort.toString(),
+      "mongodb.connection" to mongoContainer.connectionString
     )
   }
   application {

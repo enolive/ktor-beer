@@ -30,19 +30,20 @@ testing.
    cd ktor-beer
    ```
 
-2. **Start MongoDB with Docker Compose**
+2. **Start App with Docker Compose**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
-
-3. **Run the application**
-   ```bash
-   ./gradlew run
-   ```
-
-4. **Access the API**
+3. **Access the API**
    - API Base URL: `http://localhost:8080`
    - OpenAPI Documentation: `http://localhost:8080/openapi`
+
+Alternatively, you can also just start **MongoDB** and run the application with **Gradle**
+
+```bash
+docker compose -f compose.dev.yml up -d
+./gradlew run
+```
 
 ### Testing
 

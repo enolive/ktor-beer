@@ -1,0 +1,12 @@
+.git
+.gradle
+.idea
+.kotlin
+build
+data
+docs
+http-requests
+*.md
+.gitignore
+compose.yml
+compose.prod.yml
