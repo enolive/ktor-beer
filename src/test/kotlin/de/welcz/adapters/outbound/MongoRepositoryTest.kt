@@ -21,15 +21,17 @@ class MongoRepositoryTest : DescribeSpec({
   val mongoContainer = MongoDBContainer(DockerImageName.parse("mongo:7.0"))
   extension(mongoContainer.perSpec())
   lateinit var underTest: BeerService
+  lateinit var mongoClient: MongoClient
 
   beforeEach {
     val connectionString = mongoContainer.connectionString
-    val mongoClient = MongoClient.create(connectionString)
+    mongoClient = MongoClient.create(connectionString)
     underTest = MongoBeerRepository(mongoClient.getDatabase("test"))
   }
 
   afterEach {
     underTest.clearAllForTesting()
+    mongoClient.close()
   }
 
   describe("creating and finding") {
