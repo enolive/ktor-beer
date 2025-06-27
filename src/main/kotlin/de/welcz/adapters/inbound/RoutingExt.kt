@@ -11,6 +11,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.logging.*
+import io.ktor.util.reflect.*
+import kotlin.reflect.KClass
 
 fun RoutingCall.receiveId(): String = parameters["id"]!!
 
@@ -24,6 +26,13 @@ private val logger = KtorSimpleLogger("BeersRoutes")
 
 context(ctx: RoutingContext)
 suspend inline fun <reified T : Any> Either<RequestError, T>.respondEither(
+  statusCode: HttpStatusCode = HttpStatusCode.Companion.OK,
+  noinline builder: ResponseHeaders.(T) -> Unit = { },
+) = respondEither(T::class, statusCode, builder)
+
+context(ctx: RoutingContext)
+suspend fun <T : Any> Either<RequestError, T>.respondEither(
+  clazz: KClass<T>,
   statusCode: HttpStatusCode = HttpStatusCode.Companion.OK,
   builder: ResponseHeaders.(T) -> Unit = { },
 ) {
@@ -43,7 +52,7 @@ suspend inline fun <reified T : Any> Either<RequestError, T>.respondEither(
     },
     { value ->
       builder(call.response.headers, value)
-      call.respond<T>(statusCode, value)
+      call.respond(statusCode, value, TypeInfo(clazz))
     }
   )
 }
