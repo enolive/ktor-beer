@@ -1,6 +1,5 @@
 package de.welcz
 
-import com.mongodb.kotlin.client.coroutine.MongoClient
 import de.welcz.adapters.inbound.configureBeerRoutes
 import de.welcz.adapters.inbound.configureOpenApi
 import de.welcz.adapters.outbound.MongoBeerRepository
@@ -19,16 +18,12 @@ fun main(args: Array<String>) {
   EngineMain.main(args)
 }
 
-fun Application.module(testMongoClient: MongoClient? = null) {
+fun Application.module() {
   install(Koin) {
     slf4jLogger()
     modules(module {
       single<BeerService> {
-        if (testMongoClient == null) {
-          MongoBeerRepository(connectToMongoDB())
-        } else {
-          MongoBeerRepository(testMongoClient.getDatabase("test"))
-        }
+        MongoBeerRepository(connectToMongoDB())
       }
     })
   }
