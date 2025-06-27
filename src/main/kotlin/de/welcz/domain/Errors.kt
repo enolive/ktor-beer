@@ -1,4 +1,4 @@
-package de.welcz
+package de.welcz.domain
 
 import kotlinx.serialization.Serializable
 
@@ -12,4 +12,4 @@ data class ResourceNotFound(val id: String) : RequestError("Resource was not fou
 data class MalformedId(val id: String) : RequestError("The id is invalid")
 
 @Serializable
-data object InvalidBody : RequestError("Request body is invalid")
+class InvalidBody : RequestError("Request body is invalid")

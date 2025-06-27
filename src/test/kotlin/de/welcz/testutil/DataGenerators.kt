@@ -14,7 +14,7 @@ private fun Arb.Companion.brand() = Arb.string(5..20, Codepoint.alphanumeric())
 
 fun Arb.Companion.beer(): Arb<Beer> = arbitrary {
   Beer(
-    id = Arb.objectId().bind(),
+    id = Arb.string(10, Codepoint.alphanumeric()).bind(),
     brand = Arb.brand().bind(),
     name = Arb.name().bind(),
     strength = Arb.double(0.1, 15.0).bind()

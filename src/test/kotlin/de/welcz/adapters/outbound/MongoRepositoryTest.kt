@@ -1,6 +1,9 @@
-package de.welcz
+package de.welcz.adapters.outbound
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
+import de.welcz.domain.BeerService
+import de.welcz.domain.MalformedId
+import de.welcz.domain.ResourceNotFound
 import de.welcz.testutil.TestData.randomObjectId
 import de.welcz.testutil.TestData.randomPartialBeer
 import io.kotest.assertions.arrow.core.shouldBeLeft
@@ -14,14 +17,15 @@ import org.bson.Document
 import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.utility.DockerImageName
 
-class BeerServiceTest : DescribeSpec({
+class MongoRepositoryTest : DescribeSpec({
   val mongoContainer = MongoDBContainer(DockerImageName.parse("mongo:7.0"))
   extension(mongoContainer.perSpec())
   lateinit var underTest: BeerService
 
   beforeEach {
-    val mongoClient = MongoClient.create(mongoContainer.connectionString)
-    underTest = MongoBeerService(mongoClient.getDatabase("test"))
+    val connectionString = mongoContainer.connectionString
+    val mongoClient = MongoClient.create(connectionString)
+    underTest = MongoBeerRepository(mongoClient.getDatabase("test"))
   }
 
   afterEach {
@@ -132,7 +136,7 @@ class BeerServiceTest : DescribeSpec({
 })
 
 private suspend fun BeerService.clearAllForTesting() {
-  if (this is MongoBeerService) {
+  if (this is MongoBeerRepository) {
     // Access the database to clear all beers
     this.collection.deleteMany(Document())
   }

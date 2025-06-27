@@ -1,7 +1,11 @@
-package de.welcz
+package de.welcz.adapters.inbound
 
 import arrow.core.left
 import arrow.core.right
+import de.welcz.Beer
+import de.welcz.PartialBeer
+import de.welcz.domain.BeerService
+import de.welcz.domain.ResourceNotFound
 import de.welcz.testutil.TestData.randomBeer
 import de.welcz.testutil.TestData.randomBeers
 import io.kotest.assertions.json.shouldEqualJson
@@ -17,7 +21,6 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.testing.*
 import io.mockk.*
 import kotlinx.coroutines.flow.asFlow
-import org.bson.types.ObjectId
 import org.intellij.lang.annotations.Language
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -47,7 +50,7 @@ class BeerRoutesTest : DescribeSpec({
       it("returns existing beer") {
         withBeerRoutes {
           val theId = "existing-id"
-          val existingBeer = Beer(ObjectId.get(), "Astra", "Urhell", 5.0)
+          val existingBeer = randomBeer()
           coEvery { serviceMock.findById(theId) } returns existingBeer.right()
 
           val response = client.get("/beers/$theId")

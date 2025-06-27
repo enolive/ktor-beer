@@ -11,6 +11,7 @@ plugins {
   kotlin("jvm") version kotlin_version
   id("io.ktor.plugin") version "3.1.3"
   id("org.jetbrains.kotlin.plugin.serialization") version kotlin_version
+  jacoco
 }
 
 group = "de.welcz"
@@ -32,6 +33,7 @@ dependencies {
   implementation("io.insert-koin:koin-ktor:$koin_version")
   implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
   implementation("io.ktor:ktor-server-content-negotiation")
+  implementation("io.ktor:ktor-client-content-negotiation")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-core")
 
   implementation(platform("org.mongodb:mongodb-driver-bom:$mongo_version"))
@@ -51,7 +53,8 @@ dependencies {
   testImplementation("io.kotest:kotest-property:$kotest_version")
   testImplementation("io.kotest.extensions:kotest-assertions-ktor:2.0.0")
   testImplementation("io.kotest.extensions:kotest-assertions-arrow:2.0.0")
-  implementation("io.kotest.extensions:kotest-extensions-testcontainers:2.0.2")
+  testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:2.0.2")
+  testImplementation("io.kotest.extensions:kotest-extensions-koin:1.3.0")
   testImplementation("io.mockk:mockk:1.14.2")
   testImplementation("org.testcontainers:testcontainers:1.21.2")
   testImplementation("org.testcontainers:mongodb:1.19.3")
@@ -73,5 +76,24 @@ tasks {
 
   test {
     useJUnitPlatform()
+    finalizedBy(jacocoTestReport) // Add this line
+  }
+
+  jacocoTestReport {
+    dependsOn(test) // Add this block
+    reports {
+      xml.required = true
+      html.required = true
+    }
+  }
+
+  jacocoTestCoverageVerification {
+    violationRules {
+      rule {
+        limit {
+          minimum = "0.80".toBigDecimal() // 80% coverage threshold
+        }
+      }
+    }
   }
 }

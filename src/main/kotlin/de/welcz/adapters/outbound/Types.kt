@@ -1,5 +1,7 @@
-package de.welcz
+package de.welcz.adapters.outbound
 
+import de.welcz.Beer
+import de.welcz.PartialBeer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -14,22 +16,29 @@ import org.bson.codecs.kotlinx.BsonEncoder
 import org.bson.types.ObjectId
 
 @Serializable
-data class Beer(
+data class StoredBeer(
   @SerialName("_id")
   @Serializable(with = ObjectIdSerializer::class)
   val id: ObjectId? = null,
   val brand: String,
   val name: String,
   val strength: Double,
-)
-
-@Serializable
-data class PartialBeer(
-  val brand: String,
-  val name: String,
-  val strength: Double,
 ) {
-  fun withId(id: ObjectId?) = Beer(id, brand, name, strength)
+  fun toBeer(): Beer = Beer(
+    id = id?.toHexString(),
+    brand = brand,
+    name = name,
+    strength = strength
+  )
+
+  companion object {
+    fun fromPartial(beer: PartialBeer, id: ObjectId? = null) = StoredBeer(
+      brand = beer.brand,
+      name = beer.name,
+      strength = beer.strength,
+      id = id
+    )
+  }
 }
 
 // necessary to make mongodb objectid to work properly with kotlinx serialization

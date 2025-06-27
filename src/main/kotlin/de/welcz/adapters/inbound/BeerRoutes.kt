@@ -1,7 +1,10 @@
-package de.welcz
+package de.welcz.adapters.inbound
 
 import arrow.core.Either
 import arrow.core.raise.either
+import de.welcz.PartialBeer
+import de.welcz.domain.BeerService
+import de.welcz.domain.InvalidBody
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -56,29 +59,7 @@ private suspend fun RoutingCall.receiveBeer() =
   Either
     .catchOrThrow<ContentTransformationException, PartialBeer> { receive<PartialBeer>() }
     .onLeft { logger.error("creating a beer from the request body failed", it) }
-    .mapLeft { InvalidBody }
+    .mapLeft { InvalidBody() }
 
 private val logger = KtorSimpleLogger("BeersRoutes")
 
-context(ctx: RoutingContext)
-private suspend inline fun <reified T : Any> Either<RequestError, T>.respond(
-  statusCode: HttpStatusCode = HttpStatusCode.OK,
-  builder: ResponseHeaders.(T) -> Unit = { },
-) {
-  val call = ctx.call
-  this.fold(
-    { error ->
-      logger.warn(error.toString())
-      val status = when (error) {
-        is MalformedId, InvalidBody -> HttpStatusCode.BadRequest
-        is ResourceNotFound -> HttpStatusCode.NoContent
-      }
-      call.response.status(status)
-      call.respond(error)
-    },
-    { value ->
-      builder(call.response.headers, value)
-      call.respond<T>(statusCode, value)
-    }
-  )
-}
